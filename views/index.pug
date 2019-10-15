@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  .reg
+    .inp
+      input(type='text' placeholder='name' id='reg_name')
+      input(type='text' placeholder='email' id='reg_email')
+      input(type='text' placeholder='pwd' id='reg_pwd')
+      input(type='dob' placeholder='date o' id='reg_pwd')
+    .btn
+      button(type='submit' id='reg_btn') Registrate
+  script(src='./javascripts/main.js')
