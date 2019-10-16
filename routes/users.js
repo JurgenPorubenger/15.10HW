@@ -33,14 +33,14 @@ router.post('/registration', function(req, res, next) {
         console.log(result.payload.errors);
         res.json(result);
     } else {
-        const User = new userModel({profile: {
+        const User = new userModel({
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 pwd: reversePassword(pwd),
                 dob:dob,
                 phone:phone
-            }});
+            });
         User.save()
             .then(data => {
                 console.log(data+'SAVE');
@@ -51,13 +51,25 @@ router.post('/registration', function(req, res, next) {
 
 router.post('/login', function(req, res, next) {
     const{firstName,pwd}=req.body;
-    console.log(req.body+'lolololo');
+
+    function comparePwd(loginPwd,dbPwd) {
+        if (loginPwd.split("").reverse().join("") === dbPwd) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     userModel.findOne({firstName:firstName})
         .then(data=>{
-            console.log(`${JSON.stringify(data)} jjj`);
+            console.log(`${(data)} jjj`);
             if(data) {
-                console.log("Log successful!");
-                res.json(JSON.stringify(data));
+                console.log('DATA'+data);
+               if (comparePwd(pwd, data.pwd)){
+                   res.json(JSON.stringify(data));
+               } else {
+                   res.json(JSON.stringify({massage:'PWDs not match!'}));
+               }
             } else {
                 res.json(JSON.stringify({massage:'You need registration'}));
             }
