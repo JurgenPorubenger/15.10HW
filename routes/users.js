@@ -1,32 +1,69 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Ajv = require('ajv');
 const userModel = require('../model/user');
+const userSchema = require('../schemas/userSchema');
+const ajv = new Ajv();
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-router.post('/', function(req, res, next) {
-  const{username,email,pwd}=req.body;
-  // console.log(req.body);
-  const User= new userModel(req.body);
-  userModel.findOne({email:email})
-      .then(data=>{
-        if(data) {
-          res.send('Такой пользователь уже существует!');
-        } else {
-          User.save()
-              .then((data2)=>{
-
-                console.log(`Пользователь сохранен! ${data2}`);
-                res.json(JSON.stringify(data2));
-              })
-              .catch((err)=>console.log(err));
-        }
-      });
-  // res.send('respond with a resource');
+router.post('/registration', function(req, res, next) {
+    function reversePassword(password) {
+        return password.split("").reverse().join("");
+    }
+    const{firstName,lastName, email,pwd,dob,phone}=req.body;
+    console.log(req.body);
+    const validate = ajv.compile(userSchema);
+    const valid = validate({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        pwd: pwd,
+        dob:dob,
+        phone:phone
+    });
+    if(!valid){
+        const { errors } = validate;
+        const result = {
+            status: 'invalid data',
+            payload: { errors },
+        };
+        console.log(result.payload.errors);
+        res.json(result);
+    } else {
+        const User = new userModel({profile: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                pwd: reversePassword(pwd),
+                dob:dob,
+                phone:phone
+            }});
+        User.save()
+            .then(data => {
+                console.log(data+'SAVE');
+                res.json(JSON.stringify(data))
+            })
+            .catch((err) => console.log(err));    }
 });
+
+router.post('/login', function(req, res, next) {
+    const{firstName,pwd}=req.body;
+    console.log(req.body+'lolololo');
+    userModel.findOne({firstName:firstName})
+        .then(data=>{
+            console.log(`${JSON.stringify(data)} jjj`);
+            if(data) {
+                console.log("Log successful!");
+                res.json(JSON.stringify(data));
+            } else {
+                res.json(JSON.stringify({massage:'You need registration'}));
+            }
+        });
+});
+
 
 
 
