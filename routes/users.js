@@ -10,9 +10,6 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/registration', function(req, res, next) {
-    function reversePassword(password) {
-        return password.split("").reverse().join("");
-    }
     const{firstName,lastName, email,pwd,dob,phone}=req.body;
     console.log(req.body);
     const validate = ajv.compile(userSchema);
@@ -37,10 +34,11 @@ router.post('/registration', function(req, res, next) {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
-                pwd: reversePassword(pwd),
+                pwd: pwd,
                 dob:dob,
                 phone:phone
             });
+        User.pwd = User.reversePassword();
         User.save()
             .then(data => {
                 console.log(data+'SAVE');

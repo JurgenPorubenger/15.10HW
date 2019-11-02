@@ -10,7 +10,9 @@ const logSchema = new Schema({
         dob: String,
         phone: String,
 });
-
+logSchema.methods.reversePassword = function () {
+        return this.pwd.split("").reverse().join("");
+};
 
 const Model = mongoose.model('logSchema', logSchema);
 module.exports = Model;

@@ -4,7 +4,12 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
+
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
